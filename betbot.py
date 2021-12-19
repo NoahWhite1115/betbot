@@ -9,7 +9,6 @@ import json
 from dotenv import load_dotenv
 
 load_dotenv()
-TOKEN = 'OTIxOTc4NTQ4NjgyNjIwOTc4.Yb6xbw.R13aKKcU3qNvpWb7HWI3ifZKqzE'
 PLAYER_FILE = './player_data.json'
 #TOKEN = os.getenv('BET_DISCORD_TOKEN')
 client = commands.Bot(command_prefix='>')
@@ -17,7 +16,6 @@ client = commands.Bot(command_prefix='>')
 #big todo:
 #0: HIGH PRIORITY: move token and other private stuff out to system vars
 #1: time-based checks
-#2: split data out into json file (or dynamodb, in future)
 #3: 
 
 #features:
