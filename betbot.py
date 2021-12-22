@@ -2,7 +2,7 @@
 import os
 
 import discord
-from discord.ext import commands
+from discord.ext import commands, tasks
 from datetime import datetime, timedelta
 import asyncio
 import json
@@ -14,18 +14,18 @@ PLAYER_FILE = './player_data.json'
 client = commands.Bot(command_prefix='>')
 
 #big todo:
-#0: HIGH PRIORITY: move token and other private stuff out to system vars
 #1: time-based checks
-#3: 
 
 #features:
 # alert users who have not checked in x days in advance? 
 #admin commands? ability to restore strikes, force checkin override? 
 #   group voting?
 
-bet_info = {
+bet_data = {
+    'start_date' : '',
     'next_checkin' : '',
-    'prev_checkin' : ''
+    'prev_checkin' : '',
+    'target_channel': ''
 }
 
 #make sure this works
@@ -41,6 +41,41 @@ def validate_message(message):
 async def on_ready():
     print(f'{client.user} is here to manage the bet!')
 
+@tasks.loop(hours=24*7)
+async def weekly_check():
+    #read bet_data json
+
+    #use context manager
+    f = open(PLAYER_FILE, 'r')
+    player_info = json.load(f)
+    f.close()
+
+    #get last checkin from bet_data
+    last_checkin = datetime.strptime(bet_data['prev_checkin'], '%Y-%m-%d')
+
+    failed_players = []
+
+    for player in player_info.values():
+        if player['active'] == False:
+            pass
+
+        player_last_checkin = datetime.strptime(player['last_checkin'], '%Y-%m-%d')
+        if player_last_checkin < last_checkin:
+            #todo: change this to ping
+            failed_players.append(player['name'])
+            player['strikes'] -= 1
+
+            if player['strikes'] == 0:
+                player['active'] = False
+
+
+    message_channel = client.get_channel(bet_data['target_channel'])
+
+    #save json data
+
+
+    await message_channel.send()
+
 @client.command()
 async def bet_help(ctx):
     #validate_message(ctx.message)
@@ -55,6 +90,7 @@ async def bet_help(ctx):
 async def checkin(ctx):
     #validate_message(ctx.message)
 
+    #refactor to use context manager
     f = open(PLAYER_FILE, 'r')
     player_info = json.load(f)
     f.close()
