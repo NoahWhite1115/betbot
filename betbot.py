@@ -6,27 +6,24 @@ from discord.ext import commands, tasks
 from datetime import datetime, timedelta
 import asyncio
 import json
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 
-load_dotenv()
+#load_dotenv()
 PLAYER_FILE = './player_data.json'
 #TOKEN = os.getenv('BET_DISCORD_TOKEN')
 client = commands.Bot(command_prefix='>')
 
 #big todo:
 #1: time-based checks
+#   -Better output messages
+#   -Startup handling
+#   -alert loop
+#2: Move 
 
 #features:
 # alert users who have not checked in x days in advance? 
 #admin commands? ability to restore strikes, force checkin override? 
 #   group voting?
-
-bet_data = {
-    'start_date' : '',
-    'next_checkin' : '',
-    'prev_checkin' : '',
-    'target_channel': ''
-}
 
 #make sure this works
 #add logging
@@ -41,9 +38,17 @@ def validate_message(message):
 async def on_ready():
     print(f'{client.user} is here to manage the bet!')
 
-@tasks.loop(hours=24*7)
+@tasks.loop(minutes=1)
 async def weekly_check():
+    await client.wait_until_ready()
+
     #read bet_data json
+    bet_data = {
+    'start_date' : '',
+    'next_checkin' : '',
+    'prev_checkin' : '2021-12-23',
+    'target_channel': 889033125009702936
+    }
 
     #use context manager
     f = open(PLAYER_FILE, 'r')
@@ -71,10 +76,16 @@ async def weekly_check():
 
     message_channel = client.get_channel(bet_data['target_channel'])
 
+    await message_channel.send("The week of " + bet_data['prev_checkin'] " to " + bet_data['next_checkin'] + " has ended.")
+    await message_channel.send("Players who lost a strike this week: " + str(failed_players))
+
     #save json data
 
 
-    await message_channel.send()
+    await message_channel.send("Next checkin will be " + )
+
+
+
 
 @client.command()
 async def bet_help(ctx):
@@ -116,6 +127,10 @@ async def checkin(ctx):
 @client.command()
 async def bet_data(ctx, name: str = "all"):
 
+    f = open(PLAYER_FILE, 'r')
+    player_info = json.load(f)
+    f.close()
+
     embedVar = discord.Embed(title="Player data:", color=0x9e7606)
 
     if name == "all":
@@ -139,4 +154,5 @@ async def bet_data(ctx, name: str = "all"):
 
     await ctx.send(embed = embedVar)
 
+weekly_check.start()
 client.run(TOKEN)
