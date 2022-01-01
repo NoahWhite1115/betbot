@@ -8,12 +8,12 @@ from data import Data
 from checkin import Checkin
 from deadline import WeeklyDeadline
 
-#from dotenv import load_dotenv
+from dotenv import load_dotenv
 
-#load_dotenv()
+load_dotenv()
 PLAYER_FILE = './player_data.json'
 BET_FILE = './bet_data.json'
-#TOKEN = os.getenv('BET_DISCORD_TOKEN')
+TOKEN = os.getenv('BET_DISCORD_TOKEN')
 bot = commands.Bot(command_prefix='>')
 
 #big todo:
@@ -33,8 +33,8 @@ bot = commands.Bot(command_prefix='>')
 #Better output messages
 
 bot.add_cog(Help(bot))
-bot.add_cog(Data(bot, PLAYER_FILE))
-bot.add_cog(Checkin(bot, PLAYER_FILE))
+bot.add_cog(Data(bot, PLAYER_FILE, BET_FILE))
+bot.add_cog(Checkin(bot, PLAYER_FILE, BET_FILE))
 bot.add_cog(WeeklyDeadline(bot, PLAYER_FILE, BET_FILE))
 
 bot.run(TOKEN)
