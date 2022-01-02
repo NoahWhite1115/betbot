@@ -1,14 +1,17 @@
 import sys
 sys.path.append("./cogs")
+sys.path.append("./helpers")
 
+from dotenv import load_dotenv
 from discord.ext import commands
 import asyncio
+import os
+
 from help import Help
 from data import Data
 from checkin import Checkin
 from deadline import WeeklyDeadline
 
-from dotenv import load_dotenv
 
 load_dotenv()
 PLAYER_FILE = './player_data.json'
@@ -22,8 +25,6 @@ bot = commands.Bot(command_prefix='>')
 #   -alert loop
 #   -monthly update
 
-#maybe expand player data to include full timestamp instead of just date?
-#add a time to bet data
 #add warnings to bet info file if it changed since last checkin (to prevent cheating)
 
 #features:
@@ -37,4 +38,7 @@ bot.add_cog(Data(bot, PLAYER_FILE, BET_FILE))
 bot.add_cog(Checkin(bot, PLAYER_FILE, BET_FILE))
 bot.add_cog(WeeklyDeadline(bot, PLAYER_FILE, BET_FILE))
 
+bot.remove_command('help')
+
+print(TOKEN)
 bot.run(TOKEN)

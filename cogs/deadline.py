@@ -1,3 +1,6 @@
+import sys
+
+from time_helper import strToTime, dateAsStr
 import discord
 import json
 from discord.ext import commands, tasks
@@ -27,7 +30,8 @@ class WeeklyDeadline(commands.Cog):
         f.close()
 
         #get last checkin from bet_data
-        prev_checkin = datetime.strptime(bet_info['prev_checkin'], '%Y-%m-%d %H:%M:%S.%f')
+        prev_checkin = strToTime(bet_info['prev_checkin'])
+        next_checkin = strToTime(bet_info['next_checkin'])
 
         failed_players = []
 
@@ -47,9 +51,6 @@ class WeeklyDeadline(commands.Cog):
 
 
         message_channel = self.bot.get_channel(bet_info['target_channel'])
-
-        next_checkin = datetime.strptime(bet_info['next_checkin'], '%Y-%m-%d %H:%M:%S.%f')
-        prev_checkin = datetime.strptime(bet_info['prev_checkin'], '%Y-%m-%d %H:%M:%S.%f')
 
         await message_channel.send("The week of " + str(prev_checkin.date()) + " to " + str(next_checkin.date()) + " has ended.")
         await message_channel.send("Players who lost a strike this week: " + str(failed_players))
