@@ -1,4 +1,5 @@
 from discord.ext import commands, tasks
+from time_helper import strToTime, dateAsStr
 import json
 from datetime import datetime
 
@@ -35,10 +36,9 @@ class Checkin(commands.Cog):
         json.dump(player_info, f, default=str)
         f.close()
 
+        prev_checkin = strToTime(bet_info['prev_checkin'])
+        next_checkin = strToTime(bet_info['next_checkin'])
 
-        prev_checkin = datetime.strptime(bet_info['prev_checkin'], '%Y-%m-%d %H:%M:%S.%f')
-        next_checkin = datetime.strptime(bet_info['next_checkin'], '%Y-%m-%d %H:%M:%S.%f')
-
-        out = ctx.author.display_name + " has checked in for the week of " + str(prev_checkin.date()) + " to " + str(next_checkin.date())
+        out = ctx.author.display_name + " has checked in for the week of " + dateAsStr(prev_checkin) + " to " + dateAsStr(next_checkin)
 
         await ctx.send(out)

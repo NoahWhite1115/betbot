@@ -1,3 +1,4 @@
+from time_helper import strToTime, dateAsStr, dateTimeAsStr
 import discord
 from discord.ext import commands, tasks
 from datetime import datetime
@@ -24,7 +25,7 @@ class Data(commands.Cog):
             for player in player_info.values():
                 embedVar.add_field(name= f"{player['name']} owes:" , value=str(player['owes']), inline=False)
                 embedVar.add_field(name=f"{player['name']} strikes:" , value=str(player['strikes']), inline=False)
-                embedVar.add_field(name=f"{player['name']} last checkin:" , value=f"{player['last_checkin']}", inline=False)
+                embedVar.add_field(name=f"{player['name']} last checkin:" , value=f"{dateTimeAsStr(strToTime(player['last_checkin']))}", inline=False)
             
         elif name == "me":
             player = ctx.player.id
@@ -46,7 +47,7 @@ class Data(commands.Cog):
         f.close()
 
         embedVar = discord.Embed(title="Bet data:", color=0x9e7606)
-        next_checkin = datetime.strptime(bet_info['next_checkin'], '%Y-%m-%d %H:%M:%S.%f')
-        embedVar.add_field(name= "Next checkin:" , value=str(next_checkin.date()), inline=False)
+        next_checkin = strToTime(bet_info['next_checkin'])
+        embedVar.add_field(name= "Next checkin:" , value=dateTimeAsStr(next_checkin), inline=False)
 
         await ctx.send(embed = embedVar)

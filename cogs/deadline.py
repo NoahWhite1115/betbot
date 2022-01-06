@@ -1,5 +1,3 @@
-import sys
-
 from time_helper import strToTime, dateAsStr
 import discord
 import json

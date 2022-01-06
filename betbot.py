@@ -40,5 +40,4 @@ bot.add_cog(WeeklyDeadline(bot, PLAYER_FILE, BET_FILE))
 
 bot.remove_command('help')
 
-print(TOKEN)
 bot.run(TOKEN)
