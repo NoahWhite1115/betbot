@@ -29,7 +29,7 @@ class Checkin(commands.Cog):
             return
 
         player_info[str(ctx.author.id)]['last_checkin'] = datetime.now()
-        #todo: find way to auto-save names that doesn't involve player input (on checkin deadline maybe? or lookup by id?)
+        #todo: find way to auto-get names that doesn't involve player input (on checkin deadline maybe? or lookup by id?)
         player_info[str(ctx.author.id)]['name'] = ctx.author.display_name
 
         f = open(self.player_file, 'w')

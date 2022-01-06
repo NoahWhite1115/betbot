@@ -11,6 +11,11 @@ class Data(commands.Cog):
         self.player_file = player_file
         self.bet_file = bet_file
 
+    def addToEmbed(self, embedVar, player):
+        embedVar.add_field(name= f"{player['name']} owes:" , value=str(player['owes']), inline=False)
+        embedVar.add_field(name=f"{player['name']} strikes:" , value=str(player['strikes']), inline=False)
+        embedVar.add_field(name=f"{player['name']} last checkin:" , value=f"{dateTimeAsStr(strToTime(player['last_checkin']))}", inline=False)
+
     @commands.command()
     async def player_data(self, ctx, name: str = "all"):
 
@@ -23,19 +28,13 @@ class Data(commands.Cog):
         if name == "all":
             
             for player in player_info.values():
-                embedVar.add_field(name= f"{player['name']} owes:" , value=str(player['owes']), inline=False)
-                embedVar.add_field(name=f"{player['name']} strikes:" , value=str(player['strikes']), inline=False)
-                embedVar.add_field(name=f"{player['name']} last checkin:" , value=f"{dateTimeAsStr(strToTime(player['last_checkin']))}", inline=False)
+                self.addToEmbed(embedVar, player)
             
         elif name == "me":
-            player = ctx.player.id
+            player = player_info[str(ctx.author.id)]
+            self.addToEmbed(embedVar, player)
 
-            #fn for this code?
-            embedVar.add_field(name= f"{player['name']} owes:" , value=str(player['owes']), inline=False)
-            embedVar.add_field(name=f"{player['name']} strikes:" , value=str(player['strikes']), inline=False)
-            embedVar.add_field(name=f"{player['name']} last checkin:" , value=f"{player['last_checkin']}", inline=False)
-
-        #todo: allow searches on player username
+        #todo: allow searches on player username?
 
         await ctx.send(embed = embedVar)
 
