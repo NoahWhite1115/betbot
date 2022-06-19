@@ -1,71 +1,73 @@
-from time_helper import strToTime, dateAsStr
-import discord
-import json
+import logging
+from exceptions.ddbExceptions import channelNotFoundException, \
+    playerNotFoundException
+from helpers.time_helper import strToTime
 from discord.ext import commands, tasks
 from datetime import datetime, timedelta
 import asyncio
 
+
 class WeeklyDeadline(commands.Cog):
-    def __init__(self, bot, player_file, bet_file):
+    def __init__(self, bot, ddbClient):
         self.index = 0
         self.bot = bot
-        self.player_file = player_file
-        self.bet_file = bet_file
+        self.ddbClient = ddbClient
         self.deadline.start()
 
     def cog_unload(self):
         self.deadline.cancel()
 
-    @tasks.loop(hours=24*7)
+    @tasks.loop(hours=24)
     async def deadline(self):
-        #use context manager
-        f = open(self.bet_file, 'r')
-        bet_info = json.load(f)
-        f.close()
+        try:
+            betDataArray = self.ddbClient.getAllBetData()
+        except channelNotFoundException:
+            logging.error("Unable to get any bet data")
+            return
 
-        f = open(self.player_file, 'r')
-        player_info = json.load(f)
-        f.close()
+        betDataArray = filter(lambda betData: strToTime(betData.nextCheckin) < datetime.now(), betDataArray)
 
-        #get last checkin from bet_data
-        prev_checkin = strToTime(bet_info['prev_checkin'])
-        next_checkin = strToTime(bet_info['next_checkin'])
+        for betData in betDataArray:
 
-        failed_players = []
+            try:
+                playerData = self.ddbClient.getAllPlayerData(betData.id)
+            except playerNotFoundException:
+                logging.error("No channel of id: " + str(betData.id))
+                return
 
-        #need to check that this works
-        for player in player_info.values():
-            if player['active'] == False:
-                pass
+            # get last checkin from bet_data
+            prev_checkin = strToTime(betData.lastCheckin)
+            next_checkin = strToTime(betData.nextCheckin)
 
-            player_last_checkin = datetime.strptime(player['last_checkin'], '%Y-%m-%d %H:%M:%S.%f')
-            if player_last_checkin < prev_checkin:
-                #todo: change this to ping
-                failed_players.append(player['name'])
-                player['strikes'] -= 1
+            failed_players = []
 
-                if player['strikes'] == 0:
-                    player['active'] = False
+            # need to check that this works
+            for player in playerData:
+                if player.active is not False:
+                    playerLastCheckin = datetime.strptime(
+                        player.lastCheckin,
+                        '%Y-%m-%d %H:%M:%S.%f')
+                    if playerLastCheckin < prev_checkin:
+                        failed_players.append(player.name)
+                        player.lives -= 1
 
+                        if player.lives <= 0:
+                            player.lives = 0
+                            player.active = False
 
-        message_channel = self.bot.get_channel(bet_info['target_channel'])
+                self.ddbClient.updatePlayerData(betData.id, player.userId, player)
 
-        await message_channel.send("The week of " + str(prev_checkin.date()) + " to " + str(next_checkin.date()) + " has ended.")
-        await message_channel.send("Players who lost a strike this week: " + str(failed_players))
+            messageChannel = self.bot.get_channel(betData.id)
 
-        bet_info['prev_checkin'] = datetime.now()
-        bet_info['next_checkin'] = (datetime.now() + timedelta(days=7))
+            await messageChannel.send("The week of " + str(prev_checkin.date()) + " to " + str(next_checkin.date()) + " has ended.")
+            await messageChannel.send("Players who lost a strike this week: " + str(failed_players))
 
-        #save json data
-        f = open(self.player_file, 'w')
-        json.dump(player_info, f, default=str)
-        f.close()
+            betData.lastCheckin = datetime.now()
+            betData.nextCheckin = (datetime.now() + timedelta(days=betData.daysPerCheckinPeriod))
 
-        f = open(self.bet_file, 'w')
-        json.dump(bet_info, f, default=str)
-        f.close()
-        
-        await message_channel.send("Next deadline will be " + str(bet_info['next_checkin'].date()))
+            self.ddbClient.updateBetData(betData.id, betData)
+
+            await messageChannel.send("Next deadline will be " + str(betData.nextCheckin.date()))
 
     @deadline.before_loop
     async def setup_deadline(self):
@@ -73,15 +75,11 @@ class WeeklyDeadline(commands.Cog):
 
         print('bot ready')
 
-        f = open(self.bet_file, 'r')
-        bet_info = json.load(f)
-        f.close()
-
-        next_checkin = datetime.strptime(bet_info['next_checkin'], '%Y-%m-%d %H:%M:%S.%f')
+        '''
         now = datetime.now()
+        tomorrow = now + datetime.timedelta(days=1)
 
-        if (next_checkin - now).total_seconds() < 0:
-            print("Next checkin time is before current time.")
-            raise ValueError 
+        seconds = (datetime.datetime.combine(tomorrow, datetime.time.min) - now).total_seconds()
 
-        await asyncio.sleep((next_checkin - now).total_seconds())
+        await asyncio.sleep(seconds)
+        '''

@@ -1,44 +1,43 @@
-from discord.ext import commands, tasks
-from time_helper import strToTime, dateAsStr
-import json
+from discord.ext import commands
+from exceptions.ddbExceptions import channelNotFoundException,\
+    playerNotFoundException
+from helpers.time_helper import strToTime, dateAsStr
+import logging
 from datetime import datetime
 
+
 class Checkin(commands.Cog):
-    def __init__(self, bot, player_file, bet_file):
+    def __init__(self, bot, ddbClient):
         self.bot = bot
         self._last_member = None
-        self.player_file = player_file
-        self.bet_file = bet_file
+        self.ddbClient = ddbClient
 
     @commands.command()
     async def checkin(self, ctx):
-        #validate_message(ctx.message)
+        # validate_message(ctx.message)
 
-        #refactor to use context manager
-        f = open(self.player_file, 'r')
-        player_info = json.load(f)
-        f.close()
-        
-        f = open(self.bet_file, 'r')
-        bet_info = json.load(f)
-        f.close()
-
-        if str(ctx.author.id) not in player_info.keys():
-            #todo: move these to log files
-            print("No player of id: " + str(ctx.author.id))
+        try:
+            betData = self.ddbClient.getBetData(ctx.channel.id)
+        except channelNotFoundException:
+            logging.error()
             return
 
-        player_info[str(ctx.author.id)]['last_checkin'] = datetime.now()
-        #todo: find way to auto-get names that doesn't involve player input (on checkin deadline maybe? or lookup by id?)
-        player_info[str(ctx.author.id)]['name'] = ctx.author.display_name
+        try:
+            playerData = self.ddbClient.getPlayerData(ctx.channel.id, ctx.author.id)
+        except playerNotFoundException:
+            logging.error("No player of id: " + str(ctx.author.id))
+            return
 
-        f = open(self.player_file, 'w')
-        json.dump(player_info, f, default=str)
-        f.close()
+        playerData.lastCheckin = datetime.now()
+        # TODO: There's a much safer + saner way to do this by looking up the name by id when it's needed
+        playerData.name = ctx.author.display_name
 
-        prev_checkin = strToTime(bet_info['prev_checkin'])
-        next_checkin = strToTime(bet_info['next_checkin'])
+        self.ddbClient.updatePlayerData(ctx.channel.id, ctx.author.id, playerData)
 
-        out = ctx.author.display_name + " has checked in for the week of " + dateAsStr(prev_checkin) + " to " + dateAsStr(next_checkin)
+        lastCheckin = strToTime(betData.lastCheckin)
+        nextCheckin = strToTime(betData.nextCheckin)
+
+        out = ctx.author.display_name + " has checked in for the week of " + \
+            dateAsStr(lastCheckin) + " to " + dateAsStr(nextCheckin)
 
         await ctx.send(out)
