@@ -9,7 +9,6 @@ class Help(commands.Cog):
 
     @commands.command()
     async def bet_help(self, ctx):
-        # validate_message(ctx.message)
 
         embedVar = discord.Embed(
             title="Help",

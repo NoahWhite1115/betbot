@@ -6,6 +6,7 @@ from cogs.help import Help
 from cogs.data import Data
 from cogs.checkin import Checkin
 from cogs.deadline import WeeklyDeadline
+from cogs.payperiod import MonthlyPayPeriod
 from clients.ddbClient import DynamoClient
 
 load_dotenv()
@@ -17,11 +18,6 @@ TOKEN = os.getenv('BET_DISCORD_TOKEN')
 bot = commands.Bot(command_prefix='>')
 
 ddbClient = DynamoClient()
-# big todo:
-# 1: time-based checks
-#   -Startup handling
-#   -alert loop
-#   -monthly update
 
 # features:
 #  alert users who have not checked in x days in advance?
@@ -33,6 +29,7 @@ bot.add_cog(Help(bot))
 bot.add_cog(Data(bot, ddbClient))
 bot.add_cog(Checkin(bot, ddbClient))
 bot.add_cog(WeeklyDeadline(bot, ddbClient))
+bot.add_cog(MonthlyPayPeriod(bot, ddbClient))
 
 bot.remove_command('help')
 

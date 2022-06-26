@@ -1,0 +1,2 @@
+class attachmentNotFoundException(Exception):
+    pass

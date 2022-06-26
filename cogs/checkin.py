@@ -1,6 +1,7 @@
 from discord.ext import commands
 from exceptions.ddbExceptions import channelNotFoundException,\
     playerNotFoundException
+from exceptions.validationExceptions import attachmentNotFoundException
 from helpers.time_helper import strToTime, dateAsStr
 import logging
 from datetime import datetime
@@ -14,7 +15,11 @@ class Checkin(commands.Cog):
 
     @commands.command()
     async def checkin(self, ctx):
-        # validate_message(ctx.message)
+        try:
+            self.validateMessage(ctx.message)
+        except attachmentNotFoundException:
+            await ctx.send("Your message didn't have a photo attached, and will not be counted as a valid checkin")
+            return
 
         try:
             betData = self.ddbClient.getBetData(ctx.channel.id)
@@ -41,3 +46,7 @@ class Checkin(commands.Cog):
             dateAsStr(lastCheckin) + " to " + dateAsStr(nextCheckin)
 
         await ctx.send(out)
+
+    def validateMessage(self, message):
+        if len(message.attachments) == 0:
+            raise(attachmentNotFoundException('No attachments present'))

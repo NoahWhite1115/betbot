@@ -56,7 +56,9 @@ def responseToAllBetData(response):
             betDict['last_checkin'],
             betDict['start_date'],
             int(betDict['days_per_checkin_period']),
-            int(betDict['months_per_pay_period'])
+            int(betDict['months_per_pay_period']),
+            betDict['next_pay_period'],
+            int(betDict['increment_owes'])
         ))
 
     return out
@@ -75,5 +77,7 @@ def responseToBetData(response):
         betDict['last_checkin'],
         betDict['start_date'],
         int(betDict['days_per_checkin_period']),
-        int(betDict['months_per_pay_period'])
+        int(betDict['months_per_pay_period']),
+        betDict['next_pay_period'],
+        int(betDict['increment_owes'])
     )

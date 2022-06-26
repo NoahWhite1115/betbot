@@ -9,3 +9,5 @@ class betData:
     startTime: str
     daysPerCheckinPeriod: int
     monthsPerPayPeriod: int
+    nextPayPeriod: str
+    incrementOwes: int

@@ -9,7 +9,6 @@ import asyncio
 
 class WeeklyDeadline(commands.Cog):
     def __init__(self, bot, ddbClient):
-        self.index = 0
         self.bot = bot
         self.ddbClient = ddbClient
         self.deadline.start()
@@ -25,9 +24,12 @@ class WeeklyDeadline(commands.Cog):
             logging.error("Unable to get any bet data")
             return
 
+        print(betDataArray)
+
         betDataArray = filter(lambda betData: strToTime(betData.nextCheckin) < datetime.now(), betDataArray)
 
         for betData in betDataArray:
+            print(betData)
 
             try:
                 playerData = self.ddbClient.getAllPlayerData(betData.id)
@@ -59,6 +61,10 @@ class WeeklyDeadline(commands.Cog):
 
             messageChannel = self.bot.get_channel(betData.id)
 
+            if messageChannel is None:
+                logging.error("No channel of id: " + str(betData.id))
+                continue
+
             await messageChannel.send("The week of " + str(prev_checkin.date()) + " to " + str(next_checkin.date()) + " has ended.")
             await messageChannel.send("Players who lost a strike this week: " + str(failed_players))
 
@@ -73,13 +79,9 @@ class WeeklyDeadline(commands.Cog):
     async def setup_deadline(self):
         await self.bot.wait_until_ready()
 
-        print('bot ready')
-
-        '''
         now = datetime.now()
-        tomorrow = now + datetime.timedelta(days=1)
+        tomorrow = now + timedelta(days=1)
 
-        seconds = (datetime.datetime.combine(tomorrow, datetime.time.min) - now).total_seconds()
+        seconds = (datetime.combine(tomorrow, datetime.time.min) - now).total_seconds()
 
         await asyncio.sleep(seconds)
-        '''
