@@ -9,6 +9,15 @@
             "image": "ecs-betbot-repository:00000",
             "resourceRequirements": null,
             "essential": true,
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "awslogs-wordpress",
+                    "awslogs-region": "us-west-2",
+                    "awslogs-stream-prefix": "awslogs-example"
+                }
+            },
             "portMappings": [
                 {
                     "containerPort": "8080",
