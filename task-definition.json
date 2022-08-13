@@ -12,10 +12,10 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-create-group": "true",
-                    "awslogs-group": "awslogs-wordpress",
+                    "awslogs-create-group": "false",
+                    "awslogs-group": "/ecs/ecs-betbot-task-definition",
                     "awslogs-region": "us-west-2",
-                    "awslogs-stream-prefix": "awslogs-example"
+                    "awslogs-stream-prefix": "ecs"
                 }
             },
             "portMappings": [
