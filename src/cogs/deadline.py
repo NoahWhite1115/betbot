@@ -3,7 +3,7 @@ from exceptions.ddbExceptions import channelNotFoundException, \
     playerNotFoundException
 from helpers.time_helper import strToTime
 from discord.ext import commands, tasks
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 import asyncio
 
 
@@ -75,6 +75,7 @@ class WeeklyDeadline(commands.Cog):
 
             await messageChannel.send("Next deadline will be " + str(betData.nextCheckin.date()))
 
+    # TODO: Timezone shift here (currently runs at midnight UTC, not PST)
     @deadline.before_loop
     async def setup_deadline(self):
         await self.bot.wait_until_ready()
@@ -82,6 +83,6 @@ class WeeklyDeadline(commands.Cog):
         now = datetime.now()
         tomorrow = now + timedelta(days=1)
 
-        seconds = (datetime.combine(tomorrow, datetime.time.min) - now).total_seconds()
+        seconds = (datetime.combine(tomorrow, time.min) - now).total_seconds()
 
         await asyncio.sleep(seconds)

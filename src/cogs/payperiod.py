@@ -1,6 +1,6 @@
 import logging
 from discord.ext import commands, tasks
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 from dateutil.relativedelta import relativedelta
 from helpers.time_helper import strToTime
 from exceptions.ddbExceptions import channelNotFoundException, \
@@ -69,6 +69,6 @@ class MonthlyPayPeriod(commands.Cog):
         now = datetime.now()
         tomorrow = now + timedelta(days=1)
 
-        seconds = (datetime.combine(tomorrow, datetime.time.min) - now).total_seconds()
+        seconds = (datetime.combine(tomorrow, time.min) - now).total_seconds()
 
         await asyncio.sleep(seconds)
