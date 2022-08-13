@@ -1,7 +1,7 @@
 import os
 import logging
-from dotenv import load_dotenv
 from discord.ext import commands
+from clients.ssmClient import SecretClient
 from cogs.help import Help
 from cogs.data import Data
 from cogs.checkin import Checkin
@@ -9,12 +9,13 @@ from cogs.deadline import WeeklyDeadline
 from cogs.payperiod import MonthlyPayPeriod
 from clients.ddbClient import DynamoClient
 
-load_dotenv()
 logging.basicConfig(
     filename='betbot.log',
     encoding='utf-8',
     level=logging.DEBUG)
-TOKEN = os.getenv('BET_DISCORD_TOKEN')
+
+ssmClient = SecretClient('us-west-2')
+TOKEN = ssmClient.getSecret("prod/betbot/token")
 bot = commands.Bot(command_prefix='>')
 
 ddbClient = DynamoClient()
