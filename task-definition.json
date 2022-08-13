@@ -32,5 +32,6 @@
     "cpu": "256",
     "executionRoleArn": "arn:aws:iam::999422205317:role/ecs-betbot-execution-role",
     "family": "ecs-betbot-task-definition",
+    "taskRoleArn": "arn:aws:iam::999422205317:role/ecs-betbot-task-role",
     "placementConstraints": []
 }
