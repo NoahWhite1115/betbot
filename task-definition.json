@@ -12,7 +12,6 @@
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-create-group": "false",
                     "awslogs-group": "/ecs/ecs-betbot-task-definition",
                     "awslogs-region": "us-west-2",
                     "awslogs-stream-prefix": "ecs"
