@@ -59,10 +59,11 @@ class DynamoClient():
 
     def updateBetData(self, channelId, betData):
 
-        UpdateExpression = 'SET next_checkin = :nextCheckin, last_checkin = :lastCheckin'
+        UpdateExpression = 'SET next_checkin = :nextCheckin, last_checkin = :lastCheckin, next_pay_period = :nextPayPeriod'
         ExpressionAttributeValues = {
             ':nextCheckin': str(betData.nextCheckin),
-            ':lastCheckin': str(betData.lastCheckin)
+            ':lastCheckin': str(betData.lastCheckin),
+            ':nextPayPeriod': str(betData.nextPayPeriod)
         }
 
         self.table.update_item(

@@ -3,7 +3,7 @@ from exceptions.ddbExceptions import channelNotFoundException, \
     playerNotFoundException
 from helpers.time_helper import strToTime
 from discord.ext import commands, tasks
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
 import asyncio
 
 
@@ -16,7 +16,7 @@ class WeeklyDeadline(commands.Cog):
     def cog_unload(self):
         self.deadline.cancel()
 
-    @tasks.loop(hours=24)
+    @tasks.loop(hours=1)
     async def deadline(self):
         try:
             betDataArray = self.ddbClient.getAllBetData()
@@ -24,13 +24,9 @@ class WeeklyDeadline(commands.Cog):
             logging.error("Unable to get any bet data")
             return
 
-        print(betDataArray)
-
         betDataArray = filter(lambda betData: strToTime(betData.nextCheckin) < datetime.now(), betDataArray)
 
         for betData in betDataArray:
-            print(betData)
-
             try:
                 playerData = self.ddbClient.getAllPlayerData(betData.id)
             except playerNotFoundException:
@@ -75,14 +71,13 @@ class WeeklyDeadline(commands.Cog):
 
             await messageChannel.send("Next deadline will be " + str(betData.nextCheckin.date()))
 
-    # TODO: Timezone shift here (currently runs at midnight UTC, not PST)
     @deadline.before_loop
     async def setup_deadline(self):
         await self.bot.wait_until_ready()
 
         now = datetime.now()
-        tomorrow = now + timedelta(days=1)
+        next_hour = now + timedelta(hours=1).replace(microsecond=0, second=0, minute=0)
 
-        seconds = (datetime.combine(tomorrow, time.min) - now).total_seconds()
+        seconds = (next_hour - now).total_seconds()
 
         await asyncio.sleep(seconds)

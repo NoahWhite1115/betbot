@@ -34,7 +34,7 @@ class Data(commands.Cog):
 
             for player in self.ddbClient.getAllPlayerData(ctx.channel.id):
                 self.addToEmbed(embedVar, player)
-    
+
         elif name == "me":
             player = self.ddbClient.getPlayerData(ctx.channel.id,
                                                   ctx.author.id)
@@ -59,9 +59,14 @@ class Data(commands.Cog):
 
         embedVar = discord.Embed(title="Bet data:", color=0x9e7606)
         nextCheckin = strToTime(betData.nextCheckin)
+        nextPayPeriod = strToTime(betData.nextPayPeriod)
         embedVar.add_field(
             name="Next checkin:",
             value=dateTimeAsStr(nextCheckin),
+            inline=False)
+        embedVar.add_field(
+            name="Next pay period:",
+            value=dateTimeAsStr(nextPayPeriod),
             inline=False)
 
         await ctx.send(embed=embedVar)
