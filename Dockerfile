@@ -8,4 +8,4 @@ COPY . .
 
 RUN pip install -r requirements.txt
 
-CMD [ "python3", "./src/betbot.py" ]
+CMD [ "python3", "./betbot.py" ]

@@ -1,22 +1,18 @@
-import os
 import logging
 from discord.ext import commands
-from clients.ssmClient import SecretClient
-from cogs.help import Help
-from cogs.data import Data
-from cogs.checkin import Checkin
-from cogs.deadline import WeeklyDeadline
-from cogs.payperiod import MonthlyPayPeriod
-from clients.ddbClient import DynamoClient
+from src.clients.ssmClient import SecretClient
+from src.cogs.help import Help
+from src.cogs.data import Data
+from src.cogs.checkin import Checkin
+from src.cogs.deadline import WeeklyDeadline
+from src.cogs.payperiod import MonthlyPayPeriod
+from src.clients.ddbClient import DynamoClient
 
-logging.basicConfig(
-    filename='betbot.log',
-    encoding='utf-8',
-    level=logging.DEBUG)
+logging.basicConfig(filename="betbot.log", encoding="utf-8", level=logging.DEBUG)
 
-ssmClient = SecretClient('us-west-2')
+ssmClient = SecretClient("us-west-2")
 TOKEN = ssmClient.getSecret("prod/betbot/token")
-bot = commands.Bot(command_prefix='>')
+bot = commands.Bot(command_prefix=">")
 
 ddbClient = DynamoClient()
 
@@ -32,6 +28,6 @@ bot.add_cog(Checkin(bot, ddbClient))
 bot.add_cog(WeeklyDeadline(bot, ddbClient))
 bot.add_cog(MonthlyPayPeriod(bot, ddbClient))
 
-bot.remove_command('help')
+bot.remove_command("help")
 
 bot.run(TOKEN)

@@ -2,9 +2,11 @@ import logging
 from discord.ext import commands, tasks
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
-from helpers.time_helper import strToTime
-from exceptions.ddbExceptions import channelNotFoundException, \
-    playerNotFoundException
+from src.helpers.time_helper import strToTime
+from src.exceptions.ddbExceptions import (
+    channelNotFoundException,
+    playerNotFoundException,
+)
 import asyncio
 
 
@@ -25,7 +27,10 @@ class MonthlyPayPeriod(commands.Cog):
             logging.error("Unable to get any bet data")
             return
 
-        betDataArray = filter(lambda betData: strToTime(betData.nextPayPeriod) < datetime.now(), betDataArray)
+        betDataArray = filter(
+            lambda betData: strToTime(betData.nextPayPeriod) < datetime.now(),
+            betDataArray,
+        )
 
         for betData in betDataArray:
 
@@ -51,20 +56,29 @@ class MonthlyPayPeriod(commands.Cog):
                 logging.error("No channel of id: " + str(betData.id))
                 continue
 
-            await messageChannel.send("Amount owed for still active players has increased by " + str(betData.incrementOwes))
+            await messageChannel.send(
+                "Amount owed for still active players has increased by "
+                + str(betData.incrementOwes)
+            )
 
-            betData.nextPayPeriod = datetime.now() + relativedelta(months=betData.monthsPerPayPeriod)
+            betData.nextPayPeriod = datetime.now() + relativedelta(
+                months=betData.monthsPerPayPeriod
+            )
 
             self.ddbClient.updateBetData(betData.id, betData)
 
-            await messageChannel.send("Next increment will be " + str(betData.nextPayPeriod.date()))
+            await messageChannel.send(
+                "Next increment will be " + str(betData.nextPayPeriod.date())
+            )
 
     @payPeriod.before_loop
     async def setupPayPeriod(self):
         await self.bot.wait_until_ready()
 
         now = datetime.now()
-        next_hour = now + timedelta(hours=1).replace(microsecond=0, second=0, minute=0)
+        next_hour = (now + timedelta(hours=1)).replace(
+            microsecond=0, second=0, minute=0
+        )
 
         seconds = (next_hour - now).total_seconds()
 

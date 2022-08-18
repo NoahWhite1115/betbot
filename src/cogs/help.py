@@ -11,20 +11,18 @@ class Help(commands.Cog):
     async def bet_help(self, ctx):
 
         embedVar = discord.Embed(
-            title="Help",
-            description="Commands and what they do",
-            color=0x9e7606)
+            title="Help", description="Commands and what they do", color=0x9E7606
+        )
         embedVar.add_field(
-            name='>checkin',
-            value='Used to signify that a workout has been completed',
-            inline=False)
+            name=">checkin",
+            value="Used to signify that a workout has been completed",
+            inline=False,
+        )
         embedVar.add_field(
-            name='>bet_data',
-            value='Show data about the running bet',
-            inline=False)
+            name=">bet_data", value="Show data about the running bet", inline=False
+        )
         embedVar.add_field(
-            name='>player_data',
-            value='Show data about the players',
-            inline=False)
+            name=">player_data", value="Show data about the players", inline=False
+        )
 
         await ctx.send(embed=embedVar)

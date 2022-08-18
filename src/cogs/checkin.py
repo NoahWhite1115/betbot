@@ -1,8 +1,10 @@
 from discord.ext import commands
-from exceptions.ddbExceptions import channelNotFoundException,\
-    playerNotFoundException
-from exceptions.validationExceptions import attachmentNotFoundException
-from helpers.time_helper import strToTime, dateAsStr
+from src.exceptions.ddbExceptions import (
+    channelNotFoundException,
+    playerNotFoundException,
+)
+from src.exceptions.validationExceptions import attachmentNotFoundException
+from src.helpers.time_helper import strToTime, dateAsStr
 import logging
 from datetime import datetime
 
@@ -18,7 +20,9 @@ class Checkin(commands.Cog):
         try:
             self.validateMessage(ctx.message)
         except attachmentNotFoundException:
-            await ctx.send("Your message didn't have a photo attached, and will not be counted as a valid checkin")
+            await ctx.send(
+                "Your message didn't have a photo attached, and will not be counted as a valid checkin"
+            )
             return
 
         try:
@@ -42,11 +46,16 @@ class Checkin(commands.Cog):
         lastCheckin = strToTime(betData.lastCheckin)
         nextCheckin = strToTime(betData.nextCheckin)
 
-        out = ctx.author.display_name + " has checked in for the week of " + \
-            dateAsStr(lastCheckin) + " to " + dateAsStr(nextCheckin)
+        out = (
+            ctx.author.display_name
+            + " has checked in for the week of "
+            + dateAsStr(lastCheckin)
+            + " to "
+            + dateAsStr(nextCheckin)
+        )
 
         await ctx.send(out)
 
     def validateMessage(self, message):
         if len(message.attachments) == 0:
-            raise(attachmentNotFoundException('No attachments present'))
+            raise (attachmentNotFoundException("No attachments present"))

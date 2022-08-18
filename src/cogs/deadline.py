@@ -1,7 +1,9 @@
 import logging
-from exceptions.ddbExceptions import channelNotFoundException, \
-    playerNotFoundException
-from helpers.time_helper import strToTime
+from src.exceptions.ddbExceptions import (
+    channelNotFoundException,
+    playerNotFoundException,
+)
+from src.helpers.time_helper import strToTime
 from discord.ext import commands, tasks
 from datetime import datetime, timedelta
 import asyncio
@@ -24,7 +26,10 @@ class WeeklyDeadline(commands.Cog):
             logging.error("Unable to get any bet data")
             return
 
-        betDataArray = filter(lambda betData: strToTime(betData.nextCheckin) < datetime.now(), betDataArray)
+        betDataArray = filter(
+            lambda betData: strToTime(betData.nextCheckin) < datetime.now(),
+            betDataArray,
+        )
 
         for betData in betDataArray:
             try:
@@ -43,8 +48,8 @@ class WeeklyDeadline(commands.Cog):
             for player in playerData:
                 if player.active is not False:
                     playerLastCheckin = datetime.strptime(
-                        player.lastCheckin,
-                        '%Y-%m-%d %H:%M:%S.%f')
+                        player.lastCheckin, "%Y-%m-%d %H:%M:%S.%f"
+                    )
                     if playerLastCheckin < prev_checkin:
                         failed_players.append(player.name)
                         player.lives -= 1
@@ -61,22 +66,36 @@ class WeeklyDeadline(commands.Cog):
                 logging.error("No channel of id: " + str(betData.id))
                 continue
 
-            await messageChannel.send("The week of " + str(prev_checkin.date()) + " to " + str(next_checkin.date()) + " has ended.")
-            await messageChannel.send("Players who lost a strike this week: " + str(failed_players))
+            await messageChannel.send(
+                "The week of "
+                + str(prev_checkin.date())
+                + " to "
+                + str(next_checkin.date())
+                + " has ended."
+            )
+            await messageChannel.send(
+                "Players who lost a strike this week: " + str(failed_players)
+            )
 
             betData.lastCheckin = datetime.now()
-            betData.nextCheckin = (datetime.now() + timedelta(days=betData.daysPerCheckinPeriod))
+            betData.nextCheckin = datetime.now() + timedelta(
+                days=betData.daysPerCheckinPeriod
+            )
 
             self.ddbClient.updateBetData(betData.id, betData)
 
-            await messageChannel.send("Next deadline will be " + str(betData.nextCheckin.date()))
+            await messageChannel.send(
+                "Next deadline will be " + str(betData.nextCheckin.date())
+            )
 
     @deadline.before_loop
     async def setup_deadline(self):
         await self.bot.wait_until_ready()
 
         now = datetime.now()
-        next_hour = now + timedelta(hours=1).replace(microsecond=0, second=0, minute=0)
+        next_hour = (now + timedelta(hours=1)).replace(
+            microsecond=0, second=0, minute=0
+        )
 
         seconds = (next_hour - now).total_seconds()
 
