@@ -38,7 +38,6 @@ class Checkin(commands.Cog):
             return
 
         playerData.lastCheckin = datetime.now()
-        # TODO: There's a much safer + saner way to do this by looking up the name by id when it's needed
         playerData.name = ctx.author.display_name
 
         self.ddbClient.updatePlayerData(ctx.channel.id, ctx.author.id, playerData)
