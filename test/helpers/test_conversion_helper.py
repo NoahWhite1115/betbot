@@ -8,7 +8,7 @@ import unittest
 
 
 class TestConversionHelper(unittest.TestCase):
-    def test_responseToPlayerData_happy_path(self):
+    def test_responseToAllPlayerData_happy_path(self):
         testResponse = self.getTestMultiPlayerResponse()
 
         expected = [
@@ -34,7 +34,57 @@ class TestConversionHelper(unittest.TestCase):
 
         output = responseToAllPlayerData(testResponse)
 
-        self.assertEquals(expected, output)
+        self.assertEqual(expected, output)
+
+    def getTestMultiBetResponse(self):
+        response = {
+            "Items": [
+                {
+                    "next_pay_period": "2022-06-01 00:00:01.313461",
+                    "bet_data": True,
+                    "user_id": "bet_data",
+                    "next_checkin": "2022-08-14 00:00:01.099442",
+                    "days_per_checkin_period": 1,
+                    "start_date": "",
+                    "months_per_pay_period": 3,
+                    "increment_owes": 25,
+                    "last_checkin": "2022-08-13 00:00:01.099439",
+                    "game_id": "100000000000000000",
+                    "admins": [000000000, 10000000],
+                },
+                {
+                    "next_pay_period": "2022-10-01 06:59:00.313461",
+                    "bet_data": True,
+                    "user_id": "bet_data",
+                    "next_checkin": "2022-08-15 06:59:00.196492",
+                    "days_per_checkin_period": 7,
+                    "start_date": "2022-01-01 00:00:01.313461",
+                    "months_per_pay_period": 3,
+                    "increment_owes": 25,
+                    "last_checkin": "2022-06-24 12:07:07.196472",
+                    "game_id": "100000000000000001",
+                    "admins": [000000000, 10000000],
+                },
+            ],
+            "Count": 2,
+            "ScannedCount": 2,
+            "ResponseMetadata": {
+                "RequestId": "9ONDJ0LIDT4DJT4G5H5T5FK78JVV4KQNSO5AEMVJF66Q9ASUAAJG",
+                "HTTPStatusCode": 200,
+                "HTTPHeaders": {
+                    "server": "Server",
+                    "date": "Sun, 14 Aug 2022 18:42:49 GMT",
+                    "content-type": "application/x-amz-json-1.0",
+                    "content-length": "792",
+                    "connection": "keep-alive",
+                    "x-amzn-requestid": "9ONDJ0LIDT4DJT4G5H5T5FK78JVV4KQNSO5AEMVJF66Q9ASUAAJG",
+                    "x-amz-crc32": "3853391611",
+                },
+                "RetryAttempts": 0,
+            },
+        }
+
+        return response
 
     def getTestMultiPlayerResponse(self):
         response = {

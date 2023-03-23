@@ -53,6 +53,7 @@ class DynamoClient:
         return responseToPlayerData(response)
 
     def getAllPlayerData(self, channelId):
+        # TODO: exception handling on this
         response = self.table.query(
             KeyConditionExpression=Key("game_id").eq(str(channelId)),
             FilterExpression=Attr("bet_data").eq(False),

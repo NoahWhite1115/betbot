@@ -6,6 +6,7 @@ from src.cogs.data import Data
 from src.cogs.checkin import Checkin
 from src.cogs.deadline import WeeklyDeadline
 from src.cogs.payperiod import MonthlyPayPeriod
+from src.cogs.admin import Admin
 from src.clients.ddbClient import DynamoClient
 
 logging.basicConfig(filename="betbot.log", encoding="utf-8", level=logging.DEBUG)
@@ -27,6 +28,7 @@ bot.add_cog(Data(bot, ddbClient))
 bot.add_cog(Checkin(bot, ddbClient))
 bot.add_cog(WeeklyDeadline(bot, ddbClient))
 bot.add_cog(MonthlyPayPeriod(bot, ddbClient))
+bot.add_cog(Admin(bot, ddbClient))
 
 bot.remove_command("help")
 

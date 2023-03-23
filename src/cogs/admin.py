@@ -3,21 +3,20 @@ from discord.ext import commands
 # import logging
 
 
-class Checkin(commands.Cog):
+class Admin(commands.Cog):
     def __init__(self, bot, ddbClient):
         self.bot = bot
         self._last_member = None
         self.ddbClient = ddbClient
 
     @commands.command()
-    async def admin_message(self, ctx, message: str):
+    async def admin_message(self, ctx, channel: int, message: str):
 
-        adminData = self.ddbClient.getAdminData()
+        betData = self.ddbClient.getBetData(channel)
 
-        adminData = filter(lambda admin: admin.id == ctx.author.id, adminData)
+        if ctx.author.id not in betData.admins:
+            ctx.send(f"You are not an admin of server ${channel}")
+            return
 
-        for admin in adminData:
-            for channelId in admin.adminOf:
-                messageChannel = self.bot.get_channel(channelId)
-
-                await messageChannel.send(message)
+        messageChannel = self.bot.get_channel(channel)
+        await messageChannel.send(message)

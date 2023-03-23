@@ -11,3 +11,4 @@ class betData:
     monthsPerPayPeriod: int
     nextPayPeriod: str
     incrementOwes: int
+    admins: list[int]

@@ -64,9 +64,9 @@ def responseToAllBetData(response):
                 int(betDict["months_per_pay_period"]),
                 betDict["next_pay_period"],
                 int(betDict["increment_owes"]),
+                betDict["admins"],
             )
         )
-
     return out
 
 
@@ -86,4 +86,5 @@ def responseToBetData(response):
         int(betDict["months_per_pay_period"]),
         betDict["next_pay_period"],
         int(betDict["increment_owes"]),
+        betDict["admins"],
     )
