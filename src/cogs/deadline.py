@@ -27,7 +27,7 @@ class WeeklyDeadline(commands.Cog):
             return
 
         betDataArray = filter(
-            lambda betData: strToTime(betData.nextCheckin) < datetime.now(),
+            lambda betData: strToTime(betData.nextCheckin).replace(microsecond=0) < datetime.now(),
             betDataArray,
         )
 
@@ -78,7 +78,7 @@ class WeeklyDeadline(commands.Cog):
             )
 
             betData.lastCheckin = datetime.now()
-            betData.nextCheckin = datetime.now() + timedelta(
+            betData.nextCheckin = datetime.now().replace(microsecond=0) + timedelta(
                 days=betData.daysPerCheckinPeriod
             )
 
