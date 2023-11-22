@@ -26,9 +26,16 @@ class WeeklyDeadline(commands.Cog):
             logging.error("Unable to get any bet data")
             return
 
-        betDataArray = filter(
-            lambda betData: strToTime(betData.nextCheckin).replace(microsecond=0) < datetime.now(),
-            betDataArray,
+        print(betDataArray)
+
+        betDataArray = list(
+            filter(
+                lambda betData: strToTime(betData.nextCheckin).replace(
+                    microsecond=0, second=0
+                )
+                < datetime.now(),
+                betDataArray,
+            )
         )
 
         for betData in betDataArray:
@@ -44,12 +51,9 @@ class WeeklyDeadline(commands.Cog):
 
             failed_players = []
 
-            # need to check that this works
             for player in playerData:
                 if player.active is not False:
-                    playerLastCheckin = datetime.strptime(
-                        player.lastCheckin, "%Y-%m-%d %H:%M:%S.%f"
-                    )
+                    playerLastCheckin = strToTime(player.lastCheckin)
                     if playerLastCheckin < prev_checkin:
                         failed_players.append(player.name)
                         player.lives -= 1
@@ -78,7 +82,7 @@ class WeeklyDeadline(commands.Cog):
             )
 
             betData.lastCheckin = datetime.now()
-            betData.nextCheckin = datetime.now().replace(microsecond=0) + timedelta(
+            betData.nextCheckin = datetime.now() + timedelta(
                 days=betData.daysPerCheckinPeriod
             )
 
